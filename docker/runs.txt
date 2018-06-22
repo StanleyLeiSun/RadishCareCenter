@@ -1,0 +1,53 @@
+
+#For web service
+
+#run docker
+docker run -it -p :80:80 -v /conf:/conf stansun/radish /bin/bash
+
+#then start uwsgi
+uwsgi --ini /home/RadishCareCenter/docker/radish_uwsgi.ini
+
+#Sync code...
+docker attach
+
+docker exec -it 775c7c9ee1e1 /bin/bash 
+Ctrl + P + Q
+docker exec xxxx top
+
+
+#for database
+docker run --name radishdb -e MYSQL_ROOT_PASSWORD=<pwd> -e MYSQL_DATABASE=radishlog -d -p 3306:3306 mysql
+
+sudo apt-get install mysql-client-core-5.7
+mysql -h127.0.0.1 -P3306 -uroot -p<pwd>
+
+
+#Not used
+#nginx config
+sudo ln -s /var/www/demoapp/demoapp_nginx.conf /etc/nginx/conf.d/
+sudo /etc/init.d/nginx restart
+
+#uwsgi config
+sudo mkdir -p /var/log/uwsgi
+sudo chown -R ubuntu:ubuntu /var/log/uwsgi
+
+
+
+sudo mkdir /etc/uwsgi && sudo mkdir /etc/uwsgi/vassals
+sudo ln -s /var/www/demoapp/demoapp_uwsgi.ini /etc/uwsgi/vassals
+
+sudo chown -R www-data:www-data /var/www/demoapp/
+sudo chown -R www-data:www-data /var/log/uwsgi/
+
+#help
+
+netstat -lpnt
+1
+killall  -9 uwsgi
+2
+killall -s HUP /var/www/uwsgi 
+3
+killall -s HUP /usr/local/bin/uwsgi
+
+
+docker rm $(docker ps -a -q)

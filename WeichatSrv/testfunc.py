@@ -5,11 +5,13 @@ import config
 from cn_utility import num_cn2digital, extract_cn_time
 import cn_utility
 from flask import render_template, Flask
+import reporting
+import warning
 
 
 actCenter = ActionCenter()
 
-ms = RobertLogMSSQL(host=config.db_server,user=config.db_user,pwd=config.db_pwd,db="robertlog")
+ms = RobertLogMSSQL(host=config.db_server,user=config.db_user,pwd=config.db_pwd,db="radishlog")
 
 str_feedcmd_xml =  "<xml><ToUserName><![CDATA[fromUser]]></ToUserName>" +\
         "<FromUserName><![CDATA[toUser]]></FromUserName>" +\
@@ -42,13 +44,18 @@ def TestActions():
 def TestReport():
     str_report = str_cmdtemplate_xml.format("今日情况")
     print(actCenter.Receive(str_report))
-    str_report = str_cmdtemplate_xml.format("一周总结")
-    print(actCenter.Receive(str_report))
+    #str_report = str_cmdtemplate_xml.format("一周总结")
+    #print(actCenter.Receive(str_report))
+    #str_report = str_cmdtemplate_xml.format("调试消息")
+    #print(actCenter.Receive(str_report))
 
 def TestDelete():
     str_report = str_cmdtemplate_xml.format("撤销")
     print(actCenter.Receive(str_report))
 
+def TestFoodList():
+    str_report = str_cmdtemplate_xml.format("辅食食谱")
+    print(actCenter.Receive(str_report))
 
 #app = Flask(__name__)
 def TestImageList():
@@ -65,6 +72,8 @@ def TestImageList():
 #TestDelete()
 #TestImageList()
 
+#TestFoodList()
+
 #cn2d = num_cn2digital()
 #cn2d.Test()
 
@@ -78,3 +87,9 @@ def TestImageList():
 #print(config.db_pwd, config.weichat_token)
 
 #cn_utility.listimgfiles("C:\\temp\\", 10)
+
+#reporting.chart_for_last_days(40)
+
+#print(warning.GetWarnings(ms))
+
+#chcp 936

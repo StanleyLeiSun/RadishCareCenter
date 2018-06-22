@@ -72,7 +72,7 @@ class extract_cn_time:
     cn_date_pattern = re.compile(r'((\d{4}|\d{2})(-|/|.)\d{1,2}\3\d{1,2})|(\d{4}年\d{1,2}月'+\
     r'\d{1,2}日)|(\d{1,2}月\d{1,2}日)|(\d{1,2}日)')
 
-    def extract_time(self, cn_str):
+    def extract_time(self, cn_str, input_time = None ):
         dt_ret = []
         tstr_list = self.cn_time_pattern.findall(cn_str)
         #print(tstr_list)
@@ -89,12 +89,15 @@ class extract_cn_time:
                 elif r"半" in tstr:
                     minute = 30
                 
-                t = datetime.datetime.utcnow()  + datetime.timedelta(hours=+8)
-                if t.hour > 12 and hour < 12: 
+                now = GetNowForUTC8()
+                if input_time is not None:
+                    now = input_time
+
+                if now.hour > 12 and hour < 12: 
                     hour += 12 
                 
-                t2 = t.replace(hour = hour, minute = minute, second = 0, microsecond = 0)
-                if t2 > t : 
+                t2 = now.replace(hour = hour, minute = minute, second = 0, microsecond = 0)
+                if t2 > (now+datetime.timedelta(minutes = 30)) : #if the input is ahead Now, though users' clock may different so add 30 minutes' delta
                     t2 = t2 + datetime.timedelta(hours = -12)
                 
                 #print(t)
@@ -102,7 +105,7 @@ class extract_cn_time:
                 break
         return  dt_ret
     
-    def extract_time_v2(self, cn_str):
+    def extract_time_v2(self, cn_str, input_time = None ):
         dt_ret = []
         tstr_list = self.cn_time_pattern.findall(cn_str)
         if len(tstr_list) <= 0: return
@@ -119,8 +122,12 @@ class extract_cn_time:
                     elif r"半" in tstr:
                         minute = 30
 
-                    t = datetime.datetime.utcnow()  + datetime.timedelta(hours=+8)
+                    t = GetNowForUTC8()
+                    if input_time is not None:
+                        t = input_time
+
                     t2 = t.replace(hour = hour, minute = minute, second = 0, microsecond = 0)
+                    
                     dt_ret.append(t2)
                     break
         return  dt_ret
@@ -132,8 +139,7 @@ class extract_cn_time:
         #print(tlist)
         if tlist[0] > tlist[1]:
             tlist[0] = tlist[0] + datetime.timedelta(days = -1)
-        
-        #print(tlist)
+
         return int((tlist[1] - tlist[0]).total_seconds()/60)
 
     def remove_time(self, cn_str):
@@ -204,3 +210,6 @@ def reshapimg(from_img, to_img):
     new_height = int(new_width * h / w)
     img = img.resize((new_width, new_height), Image.ANTIALIAS)
     img.save(to_img) 
+
+def GetNowForUTC8():
+    return datetime.datetime.utcnow()  + datetime.timedelta(hours=+8)

@@ -1,0 +1,37 @@
+# Version 0.1
+
+# basic
+FROM ubuntu:latest
+
+# owner
+MAINTAINER Stanley.Lei.Sun@gmail.com
+
+# Operation
+RUN apt-get -yqq update && apt-get install -yqq python3 \
+    python3-pip \
+    unixodbc-dev \
+    python3-tk \
+    uwsgi \
+    uwsgi-plugin-python \
+    git-all \
+    vim \
+    sudo 
+
+#RUN mkdir -p /var/log/supervisor
+#install SQL Server ODBC
+#RUN wget https://gallery.technet.microsoft.com/ODBC-Driver-13-for-Ubuntu-b87369f0/file/154097/2/installodbc.sh && sh installodbc.sh
+
+RUN ln -s /usr/bin/python3 /usr/bin/python && ln -s /usr/bin/pip3 /usr/bin/pip && pip install --upgrade pip
+
+WORKDIR /home
+RUN git clone https://github.com/StanleyLeiSun/RadishCareCenter.git && pip install -r RadishCareCenter/WeichatSrv/requirements.txt
+
+ENV HOSTNAME stansunradish
+
+EXPOSE 80
+
+# start up cmd
+WORKDIR /home/RadishCareCenter
+CMD git pull && uwsgi --ini /home/RadishCareCenter/docker/radish_uwsgi.ini
+#CMD ["/usr/bin/supervisord"]
+#CMD ["uwsgi --ini /home/RadishCareCenter/docker/radish_uwsgi.ini"]
